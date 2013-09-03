@@ -1,5 +1,11 @@
 *.py[cod]
 
+# Virtual Env
+venv
+
+# Mac
+.DS_Store
+
 # C extensions
 *.so
 
