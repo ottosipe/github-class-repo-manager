@@ -1,35 +1,8 @@
 extends layout
 
 block main
-  .middle
-    h4 Register Your GitHub
   .center
-    hr
-
-    form.form-horizontal#user_signup
-      .form-group
-        label.col-md-3.control-label GitHub
-        .col-md-9
-          .row
-            .col-xs-3
-              img.pic(src="#{pic}")
-            .col-xs-9
-              h3.name= name
-              .id= github
-              .email= email
-
-      .form-group
-        label.col-md-3.control-label Uniqname
-        .col-md-9
-          input.form-control(type='text', name="uniqname", placeholder='uniqname', value="#{uniqname}")
-
-      .form-group
-        label.col-md-3.control-label Group Id
-        .col-md-6
-          input.form-control(type='text', name="group_id", placeholder='group_id', value="#{group_id}")
-        .col-md-3
-          a.btn.btn-default.view_group(href="/group/#{group_id}") View Group
-
-      .form-group
-        .col-md-offset-3.col-md-9
-          button.btn.btn-primary(type='submit') Save Info
+    h4 Welcome to EECS 485 Fall 2013.
+    p This semester we'll be using GitHub to collaborate on all of the projects. In order for this to go smoothly we need to map your GitHub username to your UMich uniqname. Once we do that we can have you create or join a team and we'll be able to automatically create repositories for your team!
+    .middle
+      a.btn.btn-success.btn-lg.btn-block(href="/login") Woooh, Login to GitHub!

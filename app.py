@@ -26,7 +26,7 @@ teams_db.ensure_index("group_id", unique=True, dropDups=True);
 
 @app.route('/')
 def main():
-    return "welcome"
+    return render_template("index.jade")
 
 #API to ADD/EDIT User
 @app.route('/user', methods=["GET","POST"])
@@ -42,16 +42,15 @@ def user(github):
             user_info["uniqname"] = user["uniqname"]
             user_info["group_id"] = user["group_id"]
 
-        return render_template('index.jade', **user_info)
+        return render_template('user.jade', **user_info)
 
     else:
-
         user_info["uniqname"] = request.json["uniqname"]
         user_info["group_id"] = request.json["group_id"]
 
-        users_db.update({"github":user_info["github"]}, user_info, upsert= True);
+        users_db.update({ "github":user_info["github"] }, user_info, upsert= True);
 
-        return "done"
+        return json.dumps({"status" : 'done'})
 
 
 #API to ADD/EDIT group
@@ -59,16 +58,37 @@ def user(github):
 @auth_check
 def group(github, id):
 
-    obj = getGHcreds(github)
+    user = getGHcreds(github)
+    obj = {
+        "id": id,
+        "name": ""
+    }
     #view UI for group
     if request.method == "GET":
         # lookup id in teams
         # if it doesnt exist throw error
         # else show teammates and allow edits
-        return render_template('group.jade')
+        return render_template('group.jade', **obj)
 
     #API to ADD/EDIT group
 
-    #teams_db.update({"group_id":user_info["group_id"]}, team_info, upsert= True);
+    #teams_db.update({"group_id":user_info["group_id"]}, team_info);
     return "Group Saved"
 
+
+@app.route('/key', methods=["POST"])
+@auth_check
+def key(github):
+
+    user = getGHcreds(github)
+    key = request.form["key"];
+
+    group = {
+        "group_id": key,
+        "Name": "",
+        "members": [user["github"]]
+    }
+    # todo: check that user is not in a group already!
+    teams_db.insert(group);
+
+    return "done"

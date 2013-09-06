@@ -1,7 +1,7 @@
 from flask import *
 from functools import wraps
 import requests
-from github import Github
+from github import *
 
 CLIENT_ID = "685178b367d43cf4c7f1"
 CLIENT_SECRET = "c580f07164fd6f316fb5154a16c13b431536b735"
@@ -27,11 +27,11 @@ def auth_check(f):
         oauth = session.get('oauth_token',"")
         if oauth == "": return redirect("/login")
 
-        #try:
-        g = Github(oauth)
-            #user = g.get_user().login
-        #except:
-            #return redirect("/login")
+        try:
+            g = Github(oauth)
+            g.get_user().login
+        except BadCredentialsException:
+            return redirect("/login")
 
         return f(g, *args, **kwargs)
     return decorated_function

@@ -1,0 +1,38 @@
+extends layout
+
+block main
+      
+
+    form.form-horizontal#user_signup
+      .form-group
+        .middle
+          h4 Register Your GitHub
+      .form-group
+        label.col-md-3.control-label GitHub
+        .col-md-9
+          .row
+            .col-xs-3
+              img.pic(src="#{pic}")
+            .col-xs-9
+              h3.name= name
+              .id= github
+              .email= email
+
+      .form-group
+        label.col-md-3.control-label Uniqname
+        .col-md-9
+          input.form-control(type='text', name="uniqname", placeholder='uniqname', value="#{uniqname}", required)
+
+      .form-group
+        label.col-md-3.control-label Group Id
+        .col-md-3
+          input.form-control(type='text', name="group_id", placeholder='Join Group', value="#{group_id}")
+        .col-md-3
+          a.btn.btn-default.new_group(href="#") New Group
+        .col-md-3
+          a.btn.btn-default.view_group(href="/group/#{group_id}") View Group
+
+      .form-group
+        .col-md-offset-3.col-md-9
+          button.btn.btn-primary.btn-block#save(type='submit') Save or Update
+          span.status

@@ -4,33 +4,13 @@ block main
 
   form.form-horizontal#group_signup
     .form-group
-      label.col-md-2.control-label Group Name
-      .col-md-9
-        input.form-control(type='text', name="group", placeholder='e.x. The Rabid Ocelots')
-    .form-group
-      label.col-md-2.control-label Member 1
+      label.col-md-2.control-label Group
+      .col-md-6
+        input.form-control(type='text', name="group", placeholder='e.x. The Rabid Ocelots', value="#{name}")
       .col-md-3
-        input.form-control(type='text', name="name", placeholder='First Last')
-      .col-md-3
-        input.form-control(type='text', name="github", placeholder='GitHub Id')
-      .col-md-3
-        input.form-control(type='text', name="uniqname", placeholder='uniqname')
-    .form-group
-      label.col-md-2.control-label Member 2
-      .col-md-3
-        input.form-control(type='text', name="name", placeholder='Name')
-      .col-md-3
-        input.form-control(type='text', name="github", placeholder='GitHub Id')
-      .col-md-3
-        input.form-control(type='text', name="uniqname", placeholder='uniqname')
-    .form-group
-      label.col-md-2.control-label Member 3
-      .col-md-3
-        input.form-control(type='text', name="name", placeholder='Name')
-      .col-md-3
-        input.form-control(type='text', name="github", placeholder='GitHub Id')
-      .col-md-3
-        input.form-control(type='text', name="uniqname", placeholder='uniqname')
+        input.form-control(type='text', name="group", value="#{id}", readonly)
+        
+    
     .form-group
       .col-md-offset-2.col-md-10
         button.btn.btn-default(type='submit') Save Group

@@ -3,15 +3,20 @@ $(document).ready(function() {
 	$("input[name='group_id']").change(function(){
 		$(".view_group").attr("href","/group/"+$(this).val())
 	})
-	$("#user_signup").submit(function(e) {
-		e.preventDefault();
+	$(".new_group").click(function() {
+		var key = Math.random().toString(36).substring(7);
+		$.post("/key", { key: key }, function(data) {
+			console.log(data);
+		})
+	})
+
+	function saveUserInfo(e) {
+		if(e) e.preventDefault();
 
 		var obj = {
 			uniqname: $("input[name='uniqname']").val(),
 			group_id: $("input[name='group_id']").val()
 		}
-
-		console.log(obj);
 
 		$.ajax({
 		    url: '/user',
@@ -22,10 +27,23 @@ $(document).ready(function() {
 		    },
 		    dataType: 'json',
 		    success: function (data) {
-		        console.info(data);
+		    	console.log(data);
+		    	$(".status").html("Info Saved!")
+		    	setTimeout(function() {
+		    		$(".status").html("")
+		    	}, 1000)
+		    },
+		    error: function(data) {
+		    	console.log(data);
+		    	alert("Something is wrong!\nBother Otto and give him this: \n\n" + data)
 		    }
 		});
-	})
+	}
+
+	if(window.location.pathname == "/user") {
+		saveUserInfo(null); // save right away!
+	}
+	$("#user_signup").submit(saveUserInfo);
 
 	$("#group_signup").submit(function(e) {
 		e.preventDefault();
