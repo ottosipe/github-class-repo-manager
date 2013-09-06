@@ -1,0 +1,16 @@
+
+
+.center {
+	margin:0 auto;
+	max-width: 500px;
+}
+
+.middle {
+	text-align: center;
+}
+.pic {
+	max-width: 80px;
+}
+.name {
+	margin-top: 0px;
+}
