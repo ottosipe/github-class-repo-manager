@@ -26,7 +26,10 @@ block main
         
       .form-group
         .col-md-offset-2.col-md-10
-          button.btn.btn-default(type='submit') Save Group
+          button.btn.btn-success.btn-block(type='submit') Save Group
+          .btn-group.btn-group-justified
+            a.btn.btn-primary(href="/user") Edit User
+            a.btn.btn-danger(href="/logout") Logout
   - else 
 
     h3 Team Does Not Exist

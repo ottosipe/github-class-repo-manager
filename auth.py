@@ -47,7 +47,7 @@ def logout():
     # get ride of the users token
     # this will force a new login nextime
     session['oauth_token'] = ""
-    return "done"
+    return redirect("/")
 
 @auth.route('/login')
 def login():

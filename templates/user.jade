@@ -24,15 +24,15 @@ block main
           input.form-control(type='text', name="uniqname", placeholder='uniqname', value="#{uniqname}", required)
 
       .form-group
-        label.col-md-3.control-label Group Id
-        .col-md-3
+        label.col-md-3.control-label Team
+        .col-md-6
           input.form-control(type='text', name="team_id", placeholder='Join Group', value="#{team_id}")
         .col-md-3
           a.btn.btn-default.new_team(href="#") New Group
         .col-md-3
-          a.btn.btn-default.view_team(href="/team/#{team_id}") View Group
+          a.btn.btn-success.view_team(href="/team/#{team_id}", style="display:none") View Group
 
       .form-group
         .col-md-offset-3.col-md-9
           button.btn.btn-primary.btn-block#save(type='submit') Save or Update
-          span.status
+          a.btn.btn-danger.btn-block(href="/logout") Logout

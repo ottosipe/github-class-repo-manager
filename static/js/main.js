@@ -3,10 +3,14 @@ $(document).ready(function() {
 	$("input[name='team_id']").change(function(){
 		$(".view_team").attr("href","/team/"+$(this).val())
 	})
+
 	$(".new_team").click(function() {
 		var key = Math.random().toString(36).substring(7);
 		$.post("/key", { key: key }, function(data) {
+			$("input[name='team_id']").val(key);
+			$(".view_team").attr("href","/team/"+key)
 			console.log(data);
+			resetUI();
 		})
 	})
 
@@ -28,10 +32,11 @@ $(document).ready(function() {
 		    dataType: 'json',
 		    success: function (data) {
 		    	console.log(data);
-		    	$(".status").html("Info Saved!")
+		    	var oldText = $("#save").html()
+		    	$("#save").html("Saved!")
 		    	setTimeout(function() {
-		    		$(".status").html("")
-		    	}, 1000)
+		    		$("#save").html(oldText)
+		    	}, 2000)
 		    },
 		    error: function(data) {
 		    	console.log(data);
@@ -40,17 +45,28 @@ $(document).ready(function() {
 		});
 	}
 
+	function resetUI() {
+		if($("input[name='team_id']").val()) {
+			$(".new_team").hide();
+			$(".view_team").show();
+			$("input[name='team_id']").attr("readonly","readonly")
+		} else {
+			$(".view_team").hide();
+		}
+	}
+
 	if(window.location.pathname == "/user") {
 		saveUserInfo(null); // save right away!
-	}
+		resetUI();
+	} 
+
 	$("#user_signup").submit(saveUserInfo);
 
 	$("#team_signup").submit(function(e) {
 		e.preventDefault();
 
 		var obj = {
-			name: $("input[name='team']").val(),
-			members: []
+			name: $("input[name='team']").val()
 		}
 
 		for(var i in [0,1,2]) {
@@ -62,7 +78,7 @@ $(document).ready(function() {
 		}
 
 		$.ajax({
-		    url: '/signup',
+		    url: '/team/'+$("input[name='id']").val(),
 		    type: 'POST',
 		    data: JSON.stringify(obj),
 		    headers: {

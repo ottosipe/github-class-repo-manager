@@ -20,7 +20,7 @@ users_db = mongo.eecs485_users.users
 teams_db = mongo.eecs485_users.teams
 
 users_db.ensure_index("uniqname", unique=True, dropDups=True);
-teams_db.ensure_index("team_id", unique=True, dropDups=True);
+teams_db.ensure_index("id", unique=True, dropDups=True);
 
 
 @app.route('/')
@@ -69,16 +69,22 @@ def team(github, id):
         if not team: team = {}
 
         team["members"] = []
+        seenUser = False
         for member in users_db.find({ "team_id":id }):
             team["members"].append(member)
+            if member["github"] == user["github"]: 
+                # prevent others from changing group
+                seenUser = True
 
+        if not seenUser: 
+            team = {}
         return render_template('team.jade', **team)
 
     #API to ADD/EDIT team
     else:
 
-        #teams_db.update({"team_id":user_info["team_id"]}, team_info);
-        return "Group Saved"
+        #teams_db.update({"team_id":user["team_id"]}, team);
+        return json.dumps({"status" : 'done'})
 
 
 @app.route('/key', methods=["POST"])
