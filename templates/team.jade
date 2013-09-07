@@ -1,0 +1,32 @@
+extends layout
+
+block main
+
+  - if (id) 
+
+    form.form-horizontal#team_signup
+      .form-group
+        label.col-md-2.control-label Group
+        .col-md-6
+          input.form-control(type='text', name="team", placeholder='e.x. The Rabid Ocelots', value="#{name}")
+        .col-md-4
+          input.form-control(type='text', name="team", value="#{id}", readonly)
+      
+      .form-group
+        label.col-md-2.control-label Members
+        .col-md-10
+          - each member in members
+            .row.member
+              .col-xs-3
+                img.pic(src="#{member.pic}")
+              .col-xs-9
+                h3.name= member.name
+                .id= member.github
+                .email= member.email
+        
+      .form-group
+        .col-md-offset-2.col-md-10
+          button.btn.btn-default(type='submit') Save Group
+  - else 
+
+    h3 Team Does Not Exist

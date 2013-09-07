@@ -17,7 +17,7 @@ def getGHcreds(g):
         "pic": user.avatar_url,
         "email": user.email,
         "uniqname": "",
-        "group_id": ""
+        "team_id": ""
     }
 
 def auth_check(f):

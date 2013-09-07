@@ -1,9 +1,9 @@
 $(document).ready(function() {
 
-	$("input[name='group_id']").change(function(){
-		$(".view_group").attr("href","/group/"+$(this).val())
+	$("input[name='team_id']").change(function(){
+		$(".view_team").attr("href","/team/"+$(this).val())
 	})
-	$(".new_group").click(function() {
+	$(".new_team").click(function() {
 		var key = Math.random().toString(36).substring(7);
 		$.post("/key", { key: key }, function(data) {
 			console.log(data);
@@ -15,7 +15,7 @@ $(document).ready(function() {
 
 		var obj = {
 			uniqname: $("input[name='uniqname']").val(),
-			group_id: $("input[name='group_id']").val()
+			team_id: $("input[name='team_id']").val()
 		}
 
 		$.ajax({
@@ -45,11 +45,11 @@ $(document).ready(function() {
 	}
 	$("#user_signup").submit(saveUserInfo);
 
-	$("#group_signup").submit(function(e) {
+	$("#team_signup").submit(function(e) {
 		e.preventDefault();
 
 		var obj = {
-			name: $("input[name='group']").val(),
+			name: $("input[name='team']").val(),
 			members: []
 		}
 

@@ -13,4 +13,8 @@
 }
 .name {
 	margin-top: 0px;
+	margin-bottom: 5px;
+}
+.member {
+	margin-bottom: 10px;
 }

@@ -20,8 +20,7 @@ users_db = mongo.eecs485_users.users
 teams_db = mongo.eecs485_users.teams
 
 users_db.ensure_index("uniqname", unique=True, dropDups=True);
-teams_db.ensure_index("group_id", unique=True, dropDups=True);
-
+teams_db.ensure_index("team_id", unique=True, dropDups=True);
 
 
 @app.route('/')
@@ -40,40 +39,46 @@ def user(github):
         user = users_db.find_one({ "github": user_info["github"] })
         if user_info:
             user_info["uniqname"] = user["uniqname"]
-            user_info["group_id"] = user["group_id"]
+            user_info["team_id"] = user["team_id"]
 
         return render_template('user.jade', **user_info)
 
     else:
         user_info["uniqname"] = request.json["uniqname"]
-        user_info["group_id"] = request.json["group_id"]
+        user_info["team_id"] = request.json["team_id"]
 
         users_db.update({ "github":user_info["github"] }, user_info, upsert= True);
 
         return json.dumps({"status" : 'done'})
 
 
-#API to ADD/EDIT group
-@app.route('/group/<id>', methods=["GET","POST"])
+#API to ADD/EDIT team
+@app.route('/team/<id>', methods=["GET","POST"])
 @auth_check
-def group(github, id):
+def team(github, id):
 
     user = getGHcreds(github)
-    obj = {
-        "id": id,
-        "name": ""
-    }
-    #view UI for group
+
+    team = teams_db.find_one({"id":id})
+
+    #view UI for team
     if request.method == "GET":
         # lookup id in teams
         # if it doesnt exist throw error
         # else show teammates and allow edits
-        return render_template('group.jade', **obj)
+        if not team: team = {}
 
-    #API to ADD/EDIT group
+        team["members"] = []
+        for member in users_db.find({ "team_id":id }):
+            team["members"].append(member)
 
-    #teams_db.update({"group_id":user_info["group_id"]}, team_info);
-    return "Group Saved"
+        return render_template('team.jade', **team)
+
+    #API to ADD/EDIT team
+    else:
+
+        #teams_db.update({"team_id":user_info["team_id"]}, team_info);
+        return "Group Saved"
 
 
 @app.route('/key', methods=["POST"])
@@ -83,12 +88,12 @@ def key(github):
     user = getGHcreds(github)
     key = request.form["key"];
 
-    group = {
-        "group_id": key,
-        "Name": "",
-        "members": [user["github"]]
+    team = {
+        "id": key,
+        "name": "",
+        "creator": user["github"]
     }
-    # todo: check that user is not in a group already!
-    teams_db.insert(group);
+    # todo: check that user is not in a team already!
+    teams_db.insert(team);
 
     return "done"
