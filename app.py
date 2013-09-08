@@ -105,6 +105,30 @@ def team(github, id):
         teams_db.update({"id": id}, team);
         return json.dumps({"success" : 'ok'})
 
+#to quit a team
+@app.route('/quit/<id>', methods=["GET","POST"])
+@auth_check
+def quit(github, id):
+    user_info = getGHcreds(github)
+    user = users_db.find_one({ "github": user_info["github"] })
+    team = teams_db.find_one({"id":id})
+
+    # make sure they're on the team
+    if team and user['team_id'] == id:
+
+        # remove them from the team
+        user['team_id'] = ""
+        users_db.update({ "github":user["github"] }, user);
+
+        team["size"] -= 1
+        # one team member left
+        if team["size"] == 0:
+            teams_db.remove({ "id": id })
+        # keep the team
+        else:
+            teams_db.update({ "id": id }, team)
+    
+    return redirect("/user") 
 
 @app.route('/key', methods=["POST"])
 @auth_check

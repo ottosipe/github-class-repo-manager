@@ -1,19 +1,22 @@
 $(document).ready(function() {
 
-	$("input[name='team_id']").change(function(){
-		$(".view_team").attr("href","/team/"+$(this).val())
-	})
 
 	$(".new_team").click(function() {
+
 		var key = Math.random().toString(36).substring(7);
 		$.post("/key", { key: key }, function(data) {
 			$("input[name='team_id']").val(key);
-			$(".view_team").attr("href","/team/"+key)
+			updateBtns(key);
 			console.log(data);
 			saveUserInfo(null);
 		})
 	})
 
+	function updateBtns(key) {
+		if(!key) key = $("input[name='team_id']").val();
+		$(".edit_team").attr("href","/team/"+key)
+		$(".leave_team").attr("href","/quit/"+key)
+	}
 	function saveUserInfo(e) {
 		if(e) e.preventDefault();
 
@@ -54,19 +57,21 @@ $(document).ready(function() {
 
 	function resetUI() {
 		if($("input[name='team_id']").val()) {
+			updateBtns()
 			$(".new_team").hide();
-			$(".view_team").show();
+			$(".edit_team").show();
+			$(".leave_team").show();
 			$("input[name='team_id']").attr("readonly","readonly")
 			$(".message").html("Share this key with group members.")
 		} else {
-			$(".view_team").hide();
+			$(".edit_team").hide();
+			$(".leave_team").hide();
 		}
 	}
 
 	if(window.location.pathname == "/user") {
-		saveUserInfo(null); // save right away!
 		resetUI();
-	} 
+	}
 
 	$("#user_signup").submit(saveUserInfo);
 
