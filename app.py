@@ -62,8 +62,9 @@ def user(github):
         # save the user
         users_db.update({ "github":user_info["github"] }, user_info, upsert= True);
 
-        # increment user count for team
-        if team:
+        # increment user count for team 
+        if team and user["team_id"] != team_id:
+            # user is new to the team
             team["size"] += 1
             teams_db.update({ "id": team_id }, team)
 
