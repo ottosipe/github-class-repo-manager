@@ -10,7 +10,7 @@ $(document).ready(function() {
 			$("input[name='team_id']").val(key);
 			$(".view_team").attr("href","/team/"+key)
 			console.log(data);
-			resetUI();
+			saveUserInfo(null);
 		})
 	})
 
@@ -32,8 +32,15 @@ $(document).ready(function() {
 		    dataType: 'json',
 		    success: function (data) {
 		    	console.log(data);
+
+		    	if(data.error) {
+		    		alert(data.error)
+		    		return;
+		    	}
+
 		    	var oldText = $("#save").html()
 		    	$("#save").html("Saved!")
+		        resetUI();
 		    	setTimeout(function() {
 		    		$("#save").html(oldText)
 		    	}, 2000)
@@ -62,21 +69,14 @@ $(document).ready(function() {
 
 	$("#user_signup").submit(saveUserInfo);
 
-	$("#team_signup").submit(function(e) {
+	$("#team_edit").submit(function(e) {
 		e.preventDefault();
 
 		var obj = {
-			name: $("input[name='team']").val()
+			name: $("input[name='name']").val()
 		}
 
-		for(var i in [0,1,2]) {
-			obj.members.push({
-				name: getByName("name",i),
-				github: getByName("github",i),
-				uniqname: getByName("uniqname",i)
-			})
-		}
-
+		console.log(obj);
 		$.ajax({
 		    url: '/team/'+$("input[name='id']").val(),
 		    type: 'POST',

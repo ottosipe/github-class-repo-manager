@@ -22,6 +22,7 @@ teams_db = mongo.eecs485_users.teams
 users_db.ensure_index("uniqname", unique=True, dropDups=True);
 teams_db.ensure_index("id", unique=True, dropDups=True);
 
+MAX_TEAM = 3
 
 @app.route('/')
 def main():
@@ -33,23 +34,40 @@ def main():
 def user(github):
     
     user_info = getGHcreds(github)
-    
+    user = users_db.find_one({ "github": user_info["github"] })
+
     if request.method == "GET":
 
-        user = users_db.find_one({ "github": user_info["github"] })
-        if user_info:
+
+        if user:
             user_info["uniqname"] = user["uniqname"]
             user_info["team_id"] = user["team_id"]
 
         return render_template('user.jade', **user_info)
 
-    else:
+    else: #POST
         user_info["uniqname"] = request.json["uniqname"]
-        user_info["team_id"] = request.json["team_id"]
+        team_id = user_info["team_id"] = request.json["team_id"]
 
+        team = teams_db.find_one({"id":team_id})
+
+        #check if team exists
+        if (team_id != "") and (not team):
+            return json.dumps({"error":"Invalid Team Id!"})
+
+        # check if team is full
+        if team and team["size"] >= MAX_TEAM and user["team_id"] != team_id:
+            return json.dumps({"error": "Team is Full! Maximum Team Size is " + str(MAX_TEAM)})
+
+        # save the user
         users_db.update({ "github":user_info["github"] }, user_info, upsert= True);
 
-        return json.dumps({"status" : 'done'})
+        # increment user count for team
+        if team:
+            team["size"] += 1
+            teams_db.update({ "id": team_id }, team)
+
+        return json.dumps({"success" : 'ok'})
 
 
 #API to ADD/EDIT team
@@ -63,28 +81,28 @@ def team(github, id):
 
     #view UI for team
     if request.method == "GET":
-        # lookup id in teams
-        # if it doesnt exist throw error
-        # else show teammates and allow edits
+        # team id doesnt exist in DB
         if not team: team = {}
 
+        # team is valid
         team["members"] = []
         seenUser = False
         for member in users_db.find({ "team_id":id }):
             team["members"].append(member)
             if member["github"] == user["github"]: 
-                # prevent others from changing group
                 seenUser = True
 
+        # prevent others from changing group
         if not seenUser: 
             team = {}
+        
         return render_template('team.jade', **team)
 
-    #API to ADD/EDIT team
-    else:
+    else: #POST
 
-        #teams_db.update({"team_id":user["team_id"]}, team);
-        return json.dumps({"status" : 'done'})
+        team["name"] = request.json["name"]
+        teams_db.update({"id": id}, team);
+        return json.dumps({"success" : 'ok'})
 
 
 @app.route('/key', methods=["POST"])
@@ -97,7 +115,8 @@ def key(github):
     team = {
         "id": key,
         "name": "",
-        "creator": user["github"]
+        "creator": user["github"],
+        "size": 0
     }
     # todo: check that user is not in a team already!
     teams_db.insert(team);

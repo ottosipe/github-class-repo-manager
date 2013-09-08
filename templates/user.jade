@@ -26,9 +26,9 @@ block main
       .form-group
         label.col-md-3.control-label Team
         .col-md-6
-          input.form-control(type='text', name="team_id", placeholder='Join Group', value="#{team_id}")
+          input.form-control(type='text', name="team_id", placeholder='Paste Key to Join Group', value="#{team_id}")
         .col-md-3
-          a.btn.btn-default.new_team(href="#") New Group
+          a.btn.btn-success.new_team(href="#") New Group
         .col-md-3
           a.btn.btn-success.view_team(href="/team/#{team_id}", style="display:none") View Group
 

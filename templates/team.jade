@@ -4,13 +4,13 @@ block main
 
   - if (id) 
 
-    form.form-horizontal#team_signup
+    form.form-horizontal#team_edit
       .form-group
         label.col-md-2.control-label Group
         .col-md-6
-          input.form-control(type='text', name="team", placeholder='e.x. The Rabid Ocelots', value="#{name}")
+          input.form-control(type='text', name="name", placeholder='e.x. The Rabid Ocelots', value="#{name}")
         .col-md-4
-          input.form-control(type='text', name="team", value="#{id}", readonly)
+          input.form-control(type='text', name="id", value="#{id}", readonly)
       
       .form-group
         label.col-md-2.control-label Members
