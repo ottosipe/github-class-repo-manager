@@ -1,13 +1,13 @@
+import os
 from flask import *
 from functools import wraps
 import requests
 from github import *
 
-CLIENT_ID = "685178b367d43cf4c7f1"
-CLIENT_SECRET = "c580f07164fd6f316fb5154a16c13b431536b735"
+CLIENT_ID = os.environ['CLIENT_ID']
+CLIENT_SECRET = os.environ['CLIENT_SECRET']
 GITHUB_AUTH_URL = "https://github.com/login/oauth/authorize"
 GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
-REDIRECT_URI = "http://localhost/"
 
 def getGHcreds(g):
     user = g.get_user()
@@ -72,7 +72,6 @@ def oauth():
 
     res = requests.get(GITHUB_TOKEN_URL, params=payload, headers=headers)
 
-    print res.text
     session['oauth_token'] = res.json()['access_token']
 
     return redirect("/user")

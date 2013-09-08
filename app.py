@@ -11,11 +11,11 @@ from auth import *
 app = Flask(__name__)
 app.register_blueprint(auth)
 app.debug = True
-app.secret_key = 'YEah,PrEtTY_SECreT.'
+app.secret_key = os.environ['APP_SECRET']
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 
 mongo = MongoClient('paulo.mongohq.com', 10060)
-mongo.eecs485_users.authenticate('eecs485', 'blue13mjmo')
+mongo.eecs485_users.authenticate(os.environ['DB_USER'], os.environ['DB_PASS'])
 users_db = mongo.eecs485_users.users
 teams_db = mongo.eecs485_users.teams
 
