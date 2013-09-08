@@ -57,6 +57,7 @@ $(document).ready(function() {
 			$(".new_team").hide();
 			$(".view_team").show();
 			$("input[name='team_id']").attr("readonly","readonly")
+			$(".message").html("Share this key with group members.")
 		} else {
 			$(".view_team").hide();
 		}
