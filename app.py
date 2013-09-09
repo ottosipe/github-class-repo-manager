@@ -24,6 +24,7 @@ teams_db.ensure_index("id", unique=True, dropDups=True);
 
 MAX_TEAM = 3
 
+
 @app.route('/')
 def main():
     return render_template("index.jade")
