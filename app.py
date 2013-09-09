@@ -38,7 +38,6 @@ def user(github):
 
     if request.method == "GET":
 
-
         if user:
             user_info["uniqname"] = user["uniqname"]
             user_info["team_id"] = user["team_id"]
@@ -48,6 +47,9 @@ def user(github):
     else: #POST
         user_info["uniqname"] = request.json["uniqname"]
         team_id = user_info["team_id"] = request.json["team_id"]
+
+        if not user:
+            return json.dumps({"error":"Invalid User!"})
 
         team = teams_db.find_one({"id":team_id})
 
@@ -122,7 +124,7 @@ def quit(github, id):
 
         team["size"] -= 1
         # one team member left
-        if team["size"] == 0:
+        if team["size"] <= 0:
             teams_db.remove({ "id": id })
         # keep the team
         else:
