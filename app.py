@@ -48,9 +48,6 @@ def user(github):
         user_info["uniqname"] = request.json["uniqname"]
         team_id = user_info["team_id"] = request.json["team_id"]
 
-        if not user:
-            return json.dumps({"error":"Invalid User!"})
-
         team = teams_db.find_one({"id":team_id})
 
         #check if team exists
@@ -65,7 +62,7 @@ def user(github):
         users_db.update({ "github":user_info["github"] }, user_info, upsert= True);
 
         # increment user count for team 
-        if team and user["team_id"] != team_id:
+        if team and user_info["team_id"] != team_id:
             # user is new to the team
             team["size"] += 1
             teams_db.update({ "id": team_id }, team)
