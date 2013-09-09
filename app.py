@@ -112,13 +112,14 @@ def quit(github, id):
     user = users_db.find_one({ "github": user_info["github"] })
     team = teams_db.find_one({"id":id})
 
+    # remeber old team
+    old_team = user['team_id']
     # remove them from the team
     user['team_id'] = ""
     users_db.update({ "github":user["github"] }, user);
 
     # make sure they're on the team
-    if team and user['team_id'] == id:
-
+    if team and old_team == id:
 
         team["size"] -= 1
         # one team member left
