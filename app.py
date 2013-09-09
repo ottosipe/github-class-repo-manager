@@ -62,7 +62,7 @@ def user(github):
         users_db.update({ "github":user_info["github"] }, user_info, upsert= True);
 
         # increment user count for team 
-        if team and user_info["team_id"] != team_id:
+        if team and (not user or user["team_id"] != team_id):
             # user is new to the team
             team["size"] += 1
             teams_db.update({ "id": team_id }, team)
@@ -112,12 +112,13 @@ def quit(github, id):
     user = users_db.find_one({ "github": user_info["github"] })
     team = teams_db.find_one({"id":id})
 
+    # remove them from the team
+    user['team_id'] = ""
+    users_db.update({ "github":user["github"] }, user);
+
     # make sure they're on the team
     if team and user['team_id'] == id:
 
-        # remove them from the team
-        user['team_id'] = ""
-        users_db.update({ "github":user["github"] }, user);
 
         team["size"] -= 1
         # one team member left
