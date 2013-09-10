@@ -24,6 +24,8 @@ teams_db.ensure_index("id", unique=True, dropDups=True);
 
 MAX_TEAM = 3
 
+#import utils
+#utils.fixTeamDB(teams_db, users_db)
 
 @app.route('/')
 def main():
@@ -149,3 +151,27 @@ def key(github):
     teams_db.insert(team);
 
     return "done"
+
+@app.route('/csv')
+@auth_check
+def csv(github):
+
+    csv = "team_id,user1,user2,user3,count\n"
+    for team in teams_db.find({"size": { "$ne": 0 }}):
+        csv += team['id'] + ","
+        i = MAX_TEAM
+        for user in users_db.find({"team_id":team['id']}):
+            csv += user['uniqname'] + ","
+            i-=1
+
+        while i:
+            csv += ","
+            i-=1;
+
+        csv += str(team['size']) + "\n"
+
+    response = Response(csv, mimetype='text/csv')
+    response.headers['Content-Disposition'] = 'attachment; filename=teams.csv'
+
+    return response
+
