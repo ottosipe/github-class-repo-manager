@@ -6,6 +6,7 @@ from github import Github
 from flask import *
 from pymongo import MongoClient
 
+import utils
 from auth import *
 
 app = Flask(__name__)
@@ -24,7 +25,6 @@ teams_db.ensure_index("id", unique=True, dropDups=True);
 
 MAX_TEAM = 3
 
-#import utils
 #utils.fixTeamDB(teams_db, users_db)
 
 @app.route('/')
@@ -152,9 +152,17 @@ def key(github):
 
     return "done"
 
+@app.route('/admin')
+@auth_check
+@admin_check
+def admin(org):
+
+    return "hello"
+
 @app.route('/csv')
 @auth_check
-def csv(github):
+@admin_check
+def csv(org):
 
     csv = "team_id,user1,user2,user3,count\n"
     for team in teams_db.find({"size": { "$ne": 0 }}):

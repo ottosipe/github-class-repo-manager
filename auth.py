@@ -9,6 +9,8 @@ CLIENT_SECRET = os.environ['CLIENT_SECRET']
 GITHUB_AUTH_URL = "https://github.com/login/oauth/authorize"
 GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
 
+AUTH_USERS = ["ottosipe","mikecafarella","Jun1113","themattman"]
+
 def getGHcreds(g):
     user = g.get_user()
     return {
@@ -34,6 +36,26 @@ def auth_check(f):
             return redirect("/login")
 
         return f(g, *args, **kwargs)
+    return decorated_function
+
+def admin_check(f):
+    # checks if user is admin of page
+    @wraps(f)
+    def decorated_function(g, *args, **kwargs):
+
+        org = g.get_organization("EECS485")
+        login = g.get_user().login
+
+        bad_user = True
+        for user in AUTH_USERS:
+            if user == login:
+                bad_user = False
+                break
+
+        if bad_user:
+            abort(403)
+
+        return f(org, *args, **kwargs)
     return decorated_function
 
 auth = Blueprint('auth', __name__, template_folder='templates')
