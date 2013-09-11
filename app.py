@@ -152,17 +152,26 @@ def key(github):
 
     return "done"
 
-@app.route('/admin')
+
+
+@app.route('/proj')
 @auth_check
 @admin_check
-def admin(org):
+def proj(github):
 
-    return "hello"
+    return Response(utils.createProj(teams_db, users_db, github), mimetype='text/event-stream')
+
+@app.route('/fix_teams')
+@auth_check
+@admin_check
+def fix_teams(github):
+
+    return Response(utils.fixTeamDB(teams_db, users_db), mimetype='text/event-stream')
 
 @app.route('/csv')
 @auth_check
 @admin_check
-def csv(org):
+def csv(github):
 
     csv = "team_id,user1,user2,user3,count\n"
     for team in teams_db.find({"size": { "$ne": 0 }}):

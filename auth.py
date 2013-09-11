@@ -43,7 +43,6 @@ def admin_check(f):
     @wraps(f)
     def decorated_function(g, *args, **kwargs):
 
-        org = g.get_organization("EECS485")
         login = g.get_user().login
 
         bad_user = True
@@ -55,7 +54,7 @@ def admin_check(f):
         if bad_user:
             abort(403)
 
-        return f(org, *args, **kwargs)
+        return f(g, *args, **kwargs)
     return decorated_function
 
 auth = Blueprint('auth', __name__, template_folder='templates')
