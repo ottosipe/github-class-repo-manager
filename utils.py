@@ -24,20 +24,24 @@ def fixTeamDB(teams_db, users_db):
 	yield str(del_teams) + " DELETED teams"
 
 
-def createProj(teams_db, users_db, github):
+def createProj(teams_db, users_db, github, proj):
 
 	org = github.get_organization("EECS485")
-	
+	req_start = github.rate_limiting[0]
+	num_repos = 0
+	num_teams = 0
+	num_users = 0
 
-	for team in teams_db.find({ "id": "ij6l8nkx1or", "size": { "$ne":0 } }):
+	for team in teams_db.find({ "size": { "$ne":0 } }):
 
 		yield "----------------------\n"
 		
 		# create github team first
-		team_name = "team_"+ team['id'] 								#TODO: make this pretty? list of uniqs?
+		team_name = "team_"+ team['id']
 		if not team.has_key('gh_team'):
 			#check if it exists
 			g_team = org.create_team(team_name, permission="push")
+			num_teams += 1
 
 			# save new github team to db
 			team['gh_team'] = g_team.id
@@ -49,15 +53,37 @@ def createProj(teams_db, users_db, github):
 			yield "team exists: " + team_name + " - " + str(g_team.id) + "\n"
 
 
-		# create github repo, add team to it
-		repo_name = "pa_1"+team['id'] 									#TODO: make this pretty too?
-		gh_repo = org.create_repo(repo_name, team_id=g_team, private=True)
-		yield "  created repo: " + repo_name + "\n"
+		repo_name = proj+"_"+team['id']
+		if not team.has_key('gh_'+proj):
+			# create github repo, add team to it
+
+			gh_repo = org.create_repo(repo_name, team_id=g_team, private=True)
+			num_repos += 1
+
+			team['gh_'+proj] = gh_repo.name
+			teams_db.update({"id": team['id']}, team)
+
+			yield "  created repo: " + gh_repo.full_name + "\n"
+
+		else:
+			#repo exists
+			gh_repo = org.get_repo(team['gh_'+proj])
+			yield "  repo exists: " + gh_repo.full_name + "\n"
 
 		for user in users_db.find({"team_id":team['id']}):
 			# add user
 			g_user = github.get_user(user['github'])
 			g_team.add_to_members(g_user)
+			num_users += 1
 			yield "   added user: " + user['github'] + "\n"
 
+	yield "\n----------------------\n"
+	yield "created " + str(num_teams) + " teams \n"
+	yield "created " + str(num_repos) + " repos \n"
+	yield "added " + str(num_users) + " users \n\n"
 
+	# print info about usage of github
+	req_left = github.rate_limiting[0]
+	yield "GitHub Requests:\n"
+	yield "  used: " + str(req_start - req_left) + "\n"
+	yield "  remaining: " +str(req_left)

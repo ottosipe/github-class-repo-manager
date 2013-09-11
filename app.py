@@ -154,12 +154,12 @@ def key(github):
 
 
 
-@app.route('/proj')
+@app.route('/create/pa<id>')
 @auth_check
 @admin_check
-def proj(github):
+def create_proj(github, id):
 
-    return Response(utils.createProj(teams_db, users_db, github), mimetype='text/event-stream')
+    return Response(utils.createProj(teams_db, users_db, github, "pa"+id), mimetype='text/event-stream')
 
 @app.route('/fix_teams')
 @auth_check
