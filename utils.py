@@ -10,12 +10,12 @@ def fixTeamDB(teams_db, users_db):
 
 	    if (members == 0):
 	        yield "delete " + team['id'] + "\n"
-	        #teams_db.remove({"id": team['id']})
+	        teams_db.remove({"id": team['id']})
 	        del_teams+=1
 	    elif (team['size'] - members) != 0:
 	        yield team['id'] + ": d" + str(team['size'] - members) + " " + str(members)+ "\n"
 	        team['size'] = members
-	        #teams_db.update({"id": team['id']}, team)
+	        teams_db.update({"id": team['id']}, team)
 	    else:
 	        yield team['id'] + " is OK"+ "\n"
 	        ok_teams+=1
