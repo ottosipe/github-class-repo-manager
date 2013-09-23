@@ -34,49 +34,52 @@ def createProj(teams_db, users_db, github, proj):
 
 	for team in teams_db.find({ "size": { "$ne":0 } }):
 
-		yield "----------------------\n"
-		
-		# create github team first
-		team_name = "team_"+ team['id']
-		if not team.has_key('gh_team'):
-			#check if it exists
-			g_team = org.create_team(team_name, permission="push")
-			num_teams += 1
+		try:
+			yield "----------------------\n"
+			
+			# create github team first
+			team_name = "team_"+ team['id']
+			if not team.has_key('gh_team'):
+				#check if it exists
+				g_team = org.create_team(team_name, permission="push")
+				num_teams += 1
 
-			# save new github team to db
-			team['gh_team'] = g_team.id
-			teams_db.update({"id": team['id']}, team)
-			yield "created team: " + team_name + " - " + str(g_team.id) + "\n"
+				# save new github team to db
+				team['gh_team'] = g_team.id
+				teams_db.update({"id": team['id']}, team)
+				yield "created team: " + team_name + " - " + str(g_team.id) + "\n"
 
-		else:
-			g_team = org.get_team(team['gh_team'])
-			yield "team exists: " + team_name + " - " + str(g_team.id) + "\n"
+			else:
+				g_team = org.get_team(team['gh_team'])
+				yield "team exists: " + team_name + " - " + str(g_team.id) + "\n"
 
 
-		repo_name = proj+"_"+team['id']
-		if not team.has_key('gh_'+proj):
-			# create github repo, add team to it
+			repo_name = proj+"_"+team['id']
+			if not team.has_key('gh_'+proj):
+				# create github repo, add team to it
 
-			gh_repo = org.create_repo(repo_name, team_id=g_team, private=True)
-			num_repos += 1
+				gh_repo = org.create_repo(repo_name, team_id=g_team, private=True)
+				num_repos += 1
 
-			team['gh_'+proj] = gh_repo.name
-			teams_db.update({"id": team['id']}, team)
+				team['gh_'+proj] = gh_repo.name
+				teams_db.update({"id": team['id']}, team)
 
-			yield "  created repo: " + gh_repo.full_name + "\n"
+				yield "  created repo: " + gh_repo.full_name + "\n"
 
-		else:
-			#repo exists
-			gh_repo = org.get_repo(team['gh_'+proj])
-			yield "  repo exists: " + gh_repo.full_name + "\n"
+			else:
+				#repo exists
+				gh_repo = org.get_repo(team['gh_'+proj])
+				yield "  repo exists: " + gh_repo.full_name + "\n"
 
-		for user in users_db.find({"team_id":team['id']}):
-			# add user
-			g_user = github.get_user(user['github'])
-			g_team.add_to_members(g_user)
-			num_users += 1
-			yield "   added user: " + user['github'] + "\n"
+			for user in users_db.find({"team_id":team['id']}):
+				# add user
+				g_user = github.get_user(user['github'])
+				g_team.add_to_members(g_user)
+				num_users += 1
+				yield "   added user: " + user['github'] + "\n"
 
+		except:
+			yield " \n ...problem... \n"
 	yield "\n----------------------\n"
 	yield "created " + str(num_teams) + " teams \n"
 	yield "created " + str(num_repos) + " repos \n"
