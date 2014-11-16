@@ -152,12 +152,12 @@ def key(github):
 
     return "done"
 
-@app.route('/create/pa<id>') # create a project repo for every group: eg. pa1_groupid
+@app.route('/create/<id>') # create a project repo for every group: eg. projectId_groupid
 @auth_check
 @admin_check
 def create_proj(github, id):
 
-    return Response(utils.createProj(teams_db, users_db, github, "pa"+id), mimetype='text/event-stream')
+    return Response(utils.createProj(teams_db, users_db, github, id), mimetype='text/event-stream')
 
 @app.route('/fix_teams') # fix team counts (you probably wont need this)
 @auth_check
