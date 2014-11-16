@@ -15,15 +15,15 @@ app.debug = True
 app.secret_key = os.environ['APP_SECRET']
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 
-mongo = MongoClient('paulo.mongohq.com', 10060)
-mongo.eecs485_users.authenticate(os.environ['DB_USER'], os.environ['DB_PASS'])
-users_db = mongo.eecs485_users.users
-teams_db = mongo.eecs485_users.teams
+db_name = os.environ['DB_NAME']
+mongo = MongoClient(os.environ['MONGO_URI'])
+users_db = mongo[db_name].users
+teams_db = mongo[db_name].teams
 
 users_db.ensure_index("uniqname", unique=True, dropDups=True);
 teams_db.ensure_index("id", unique=True, dropDups=True);
 
-MAX_TEAM = 3
+MAX_TEAM_MEMBERS = 3
 
 #utils.fixTeamDB(teams_db, users_db)
 
@@ -58,8 +58,8 @@ def user(github):
             return json.dumps({"error":"Invalid Team Id!"})
 
         # check if team is full
-        if team and team["size"] >= MAX_TEAM and user["team_id"] != team_id:
-            return json.dumps({"error": "Team is Full! Maximum Team Size is " + str(MAX_TEAM)})
+        if team and team["size"] >= MAX_TEAM_MEMBERS and user["team_id"] != team_id:
+            return json.dumps({"error": "Team is Full! Maximum Team Size is " + str(MAX_TEAM_MEMBERS)})
 
         # save the user
         users_db.update({ "github":user_info["github"] }, user_info, upsert= True);
@@ -152,23 +152,21 @@ def key(github):
 
     return "done"
 
-
-
-@app.route('/create/pa<id>')
+@app.route('/create/pa<id>') # create a project repo for every group: eg. pa1_groupid
 @auth_check
 @admin_check
 def create_proj(github, id):
 
     return Response(utils.createProj(teams_db, users_db, github, "pa"+id), mimetype='text/event-stream')
 
-@app.route('/fix_teams')
+@app.route('/fix_teams') # fix team counts (you probably wont need this)
 @auth_check
 @admin_check
 def fix_teams(github):
 
     return Response(utils.fixTeamDB(teams_db, users_db), mimetype='text/event-stream')
 
-@app.route('/csv')
+@app.route('/csv') # get a csv for all the team members in each group
 @auth_check
 @admin_check
 def csv(github):
@@ -176,7 +174,7 @@ def csv(github):
     csv = "team_id,user1,user2,user3,count\n"
     for team in teams_db.find({"size": { "$ne": 0 }}):
         csv += team['id'] + ","
-        i = MAX_TEAM
+        i = MAX_TEAM_MEMBERS
         for user in users_db.find({"team_id":team['id']}):
             csv += user['uniqname'] + ","
             i-=1

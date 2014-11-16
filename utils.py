@@ -1,4 +1,7 @@
 
+import os
+github_org = os.environ['GITHUB_ORG']
+
 def fixTeamDB(teams_db, users_db):
 
 	ok_teams = del_teams = 0
@@ -26,7 +29,8 @@ def fixTeamDB(teams_db, users_db):
 
 def createProj(teams_db, users_db, github, proj):
 
-	org = github.get_organization("EECS485")
+	# only admins will be able to do this, should 500 if others try since they're not an admin of the github org
+	org = github.get_organization(github_org) 
 	req_start = github.rate_limiting[0]
 	num_repos = 0
 	num_teams = 0

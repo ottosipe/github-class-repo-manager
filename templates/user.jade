@@ -2,7 +2,6 @@ extends layout
 
 block main
       
-
     form.form-horizontal#user_signup
       .form-group
         .middle
@@ -21,7 +20,10 @@ block main
       .form-group
         label.col-md-3.control-label Uniqname
         .col-md-9
-          input.form-control(type='text', name="uniqname", placeholder='uniqname', value="#{uniqname}", required)
+          .input-group
+            input.form-control(type='text', name="uniqname", placeholder='uniqname', value="#{uniqname}", required)
+            span.input-group-btn
+              a.btn(href="#") @umich.edu
 
       .form-group
         label.col-md-3.control-label Team

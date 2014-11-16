@@ -17,6 +17,7 @@ $(document).ready(function() {
 		$(".edit_team").attr("href","/team/"+key)
 		$(".leave_team").attr("href","/quit/"+key)
 	}
+	
 	function saveUserInfo(e) {
 		if(e) e.preventDefault();
 
